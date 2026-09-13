@@ -1,0 +1,17 @@
+# Codex MCP-Konfiguration für n8n-mcp (AI Automation Bootcamp).
+# Kopieren nach ~/.codex/config.toml (global) ODER als .codex/config.toml ins Projekt
+# (Projekt-Scope funktioniert nur bei "trusted projects").
+# N8N_API_URL: zentrale Bootcamp-n8n (Zugangsdaten im Zugangsbereich https://buildbar.at/oew#zugang)
+# oder deine eigene n8n mit API-Zugang. Die n8n-Cloud-Testversion hat keinen API-Zugang.
+# ⚠️ Die echte Datei NICHT committen (enthält deinen API-Key), sie steht in .gitignore.
+
+[mcp_servers.n8n-mcp]
+command = "npx"
+args = ["-y", "n8n-mcp"]
+
+[mcp_servers.n8n-mcp.env]
+N8N_API_URL = "https://n8n-oew.buildbar.at"
+N8N_API_KEY = "DEIN_N8N_API_KEY"
+MCP_MODE = "stdio"
+LOG_LEVEL = "error"
+DISABLE_CONSOLE_OUTPUT = "true"
