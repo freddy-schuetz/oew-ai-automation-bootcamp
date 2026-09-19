@@ -24,6 +24,43 @@ In **jeder n8n eingebaut**. Keine Anmeldung, kein Connection-String, kein eigene
 - ⚠️ **Zentrale Bootcamp-n8n:** Alle Teilnehmenden sehen alle Data Tables. Tabellen mit deinem Vornamen benennen (z. B. `anna_anfragen`), nur eigene Tabellen ändern und keine echten personenbezogenen Daten speichern.
 - Winziger Zustand ohne Tabelle: n8n **Workflow Static Data** (Schlüssel und Werte).
 
+### ⚠️ Zwei stille Zeilendeckel (gemessen am 19.09.2026)
+
+Beide melden **keinen Fehler**. Der Workflow laeuft gruen durch und verarbeitet trotzdem nur
+einen Bruchteil der Daten.
+
+| Wo | Was passiert |
+|---|---|
+| **Data-Table-Node** | Liefert bei `limit: 2000` genau **50 Zeilen**. Sie fällt still auf ihren Default zurück. |
+| **n8n-API** | Nimmt höchstens `limit=200`. Bei 500 antwortet sie mit **0 Zeilen**, ohne Fehler und ohne Cursor. |
+
+**Immer die Zeilenzahl gegen die Tabelle prüfen.** Wenn die Tabelle 1631 Zeilen hat und der
+Node 50 liefert, ist das kein Zufall.
+
+**Ab etwa 50 Zeilen: über die API blättern.** Ein HTTP-Request-Node mit Cursor-Paginierung
+holt alles. Credential: `httpHeaderAuth` mit Name `X-N8N-API-KEY` und dem n8n-API-Key als Wert.
+
+```
+URL    http://127.0.0.1:5678/api/v1/data-tables/<TABELLEN-ID>/rows
+Query  limit = 200
+Options -> Pagination
+  Pagination Mode        Update a Parameter in Each Request
+  Parameter (Query)      cursor = {{ $response.body.nextCursor }}
+  Pagination Complete    Other
+  Complete Expression    {{ !$response.body.nextCursor }}
+  Max Pages              30
+```
+
+Danach im Code-Node alle Seiten zusammenführen und **prüfen, ob genug angekommen ist**:
+
+```javascript
+const alle = [];
+for (const it of $input.all()) for (const z of (it.json.data || [])) alle.push(z);
+if (alle.length < 100) {
+  throw new Error('Nur ' + alle.length + ' Zeilen geladen. Vermutlich greift ein stiller Deckel.');
+}
+```
+
 → **Für die allermeisten n8n-Vorhaben ist das der richtige und einfachste Weg.**
 
 ## 2. NocoDB: Tabellen im Browser

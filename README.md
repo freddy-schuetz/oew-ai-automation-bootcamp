@@ -59,6 +59,7 @@ Claude prüft die Voraussetzungen, lädt die Vorlage herunter, richtet sie ein u
    - **Zentrale Bootcamp-n8n:** `N8N_API_URL` = `https://n8n-oew.buildbar.at`. Den API-Key findet die Person im Zugangsbereich https://buildbar.at/oew#zugang (Passwort gibt es im Online-Kick-off).
    - **Eigene n8n:** URL der Instanz und ein API-Key aus n8n (Settings, n8n API, Create API Key).
    - **Keine n8n-Cloud-Testversion:** Sie hat keinen API-Zugang. Will die Person die Testversion nutzen, erkläre das und verweise auf die zentrale Bootcamp-n8n.
+   - **`N8N_MCP_ACCESS_TOKEN` ebenfalls eintragen.** Ohne ihn lassen sich Workflows **ohne** Webhook (also alle mit Zeitplan) nicht testen, und Data-Table-Spalten nicht nachträglich ändern. Für die zentrale Bootcamp-n8n steht der Token im Zugangsbereich. Bei einer eigenen n8n: *Settings, Instance-level MCP*, Status auf **Enabled**, dann den Key kopieren.
    - URL mit `https://` und **ohne** Schrägstrich am Ende. Den Key darf die Person dir in den Chat schreiben. Er bleibt nur in der lokalen `.mcp.json`: **nie ausgeben, nie in andere Dateien schreiben, nie committen.**
 5. **(Optional) Frontend-Abhängigkeiten**, falls eine Oberfläche gewünscht ist: im Ordner `frontend-starter` `npm install`.
 6. **Neustart:** Bitte die Person, die App neu zu starten (bzw. das Projekt neu zu öffnen), damit der n8n-MCP-Server und die Skills geladen werden. Hat sie in einen Unterordner geklont, öffnet sie jetzt diesen Ordner.
@@ -73,6 +74,8 @@ Claude prüft die Voraussetzungen, lädt die Vorlage herunter, richtet sie ein u
 ## 🔑 n8n-Zugang
 
 **Zentrale Bootcamp-n8n (empfohlen):** `https://n8n-oew.buildbar.at`. URL, Login und API-Key stehen im Zugangsbereich https://buildbar.at/oew#zugang. Alle Teilnehmenden nutzen einen gemeinsamen Login und sehen alle Workflows und Credentials. Deshalb: eigene Sachen mit deinem Vornamen benennen, nichts von anderen ändern, keine echten personenbezogenen Daten und keine privaten Passwörter hinterlegen.
+
+**Zweiter Schlüssel, der MCP-Token:** Neben dem API-Key braucht Claude den `N8N_MCP_ACCESS_TOKEN`. Er steckt in derselben `.mcp.json` und schaltet frei, dass Claude Workflows **ohne Webhook** starten kann, also alle zeitgesteuerten. Er steht im Zugangsbereich.
 
 **Eigene n8n:** geht auch, wenn sie einen API-Zugang hat. In n8n unter **Settings, n8n API, Create API Key** einen Key erzeugen und Claude URL und Key geben.
 
@@ -134,7 +137,7 @@ Skills sind Spickzettel, die Claude **von selbst** heranzieht, sobald sie zum Th
 |------|-----------|
 | `CLAUDE.md` | Die Spielregeln für Claude (lädt automatisch): Workflows korrekt bauen, testen, dokumentieren, veröffentlichen und ins eigene Repository bringen. |
 | `.mcp.json.example` | Vorlage für die Verbindung zu deiner n8n. Die echte `.mcp.json` mit deinem Key bleibt lokal. |
-| `examples/workflows/` | Importierbare Lern-Beispiele mit Sticky-Notes-Erklärung: `n8n-grundlagen.json`, `ai-agent-grundlagen.json`, `ai-agent-datatable.json`, `ai-agent-tool-webhook.json`, `hello-webhook.json`, dazu je ein Beispiel pro Bootcamp-Thema. |
+| `examples/workflows/` | Importierbare Lern-Beispiele mit Sticky-Notes-Erklärung: `n8n-grundlagen.json`, `ai-agent-grundlagen.json`, `ai-agent-datatable.json`, `ai-agent-tool-webhook.json`, `hello-webhook.json`, `datatable-alle-zeilen.json`, dazu je ein Beispiel pro Bootcamp-Thema. |
 | `workflows/` | Hier landen am Ende **deine** Workflows als JSON (legt Claude an). |
 | `frontend-starter/` | Lauffähige Web-App: Formular → n8n-Webhook, plus optionaler KI-Chat. |
 | `backend-example/` | Lauffähiges FastAPI-Backend (`/health` und Beispiel-Endpoint). |
@@ -156,6 +159,7 @@ Claude baut den Workflow und **validiert, testet mit Beispieldaten, dokumentiert
 - `examples/workflows/ai-agent-datatable.json`: Chat → KI-Agent → Ergebnis in eine n8n Data Table.
 - `examples/workflows/ai-agent-tool-webhook.json`: der KI-Agent ruft per Tool den `hello-webhook` auf.
 - `examples/workflows/hello-webhook.json`: Mini-Workflow zum Ausprobieren.
+- `examples/workflows/datatable-alle-zeilen.json`: holt **alle** Zeilen einer Data Table. Die Data-Table-Node liefert nämlich still nur 50, ohne Fehlermeldung.
 
 Zu den sechs Bootcamp-Themen gibt es je ein Beispiel, das der passende Themen-Skill als Startpunkt nutzt: `meetingnotizen-aufgaben.json`, `mail-triage-entwuerfe.json`, `bericht-woechentlich.json`, `terminumfrage.json`, `csv-auswertung-diagramm.json`, `folien-google-slides.json`.
 

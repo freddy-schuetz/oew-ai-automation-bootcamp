@@ -133,6 +133,38 @@ Für LangChain/AI-Nodes `sourceOutput` nutzen: `ai_languageModel`, `ai_tool`, `a
 
 ⚠️ **HTTP-Tool für Agents:** den **regulären HTTP Request als Tool** verwenden (`n8n-nodes-base.httpRequestTool`, v4.x) mit `$fromAI('feld','Beschreibung','string')` für Werte, die das LLM füllt. **Nicht** den Legacy-Node `@n8n/n8n-nodes-langchain.toolHttpRequest` (v1.1, deprecated). Fast jeder Standard-Node kann als Tool an den Agent gehängt werden.
 
+### Mailversand: Brevo, nicht SMTP
+
+**Mailversand funktioniert.** Das Credential **„Brevo"** liegt auf der zentralen Bootcamp-n8n
+und ist einsatzbereit. Nimm den Node **`n8n-nodes-base.sendInBlue`** (heisst im Editor „Brevo"),
+`resource: "email"`, `operation: "send"`:
+
+```
+sender        <Absender aus dem Zugangsbereich>  (muss in Brevo verifiziert sein)
+receipients   empfaenger@example.com           (Achtung: n8n schreibt das Feld falsch,
+                                                mit "ei" statt "i" — receipients)
+subject       {{ $json.betreff }}
+textContent   {{ $json.bericht }}
+sendHTML      false, oder true für HTML
+```
+
+Kontingent: **300 Mails pro Tag**, für das Bootcamp reichlich.
+
+⚠️ **Nimm nicht den Node „Send Email".** Der spricht SMTP, und die Ports 25, 465 und 587 sind
+auf dem Server gesperrt (wie bei fast allen Hostern, gegen Spam-Versand). Der Node wartet
+**240 Sekunden** und meldet dann nur `Connection timeout` — er sieht also nicht nach einem
+Konfigurationsfehler aus, sondern nach einem hängenden Workflow. Brevo läuft über HTTPS und
+hat das Problem nicht.
+
+**Eigener Absender?** In Brevo muss jede Absenderadresse verifiziert sein. Wer eine eigene
+verwenden will, trägt sie unter Senders ein und bestätigt die Mail. Für alles andere den
+Absender aus dem Zugangsbereich nehmen.
+
+**Ohne Versand geht es auch:** Ergebnis in eine Data Table schreiben oder den Webhook die
+fertige Liste zurückgeben lassen und im Frontend anzeigen. Für Berichte, die jemand prüfen
+soll, bevor sie rausgehen, eignet sich zusätzlich ein Outlook- oder Gmail-**Entwurf**
+(`resource: "draft"`).
+
 ## Best Practices
 
 ### Do
