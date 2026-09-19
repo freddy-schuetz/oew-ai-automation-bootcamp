@@ -155,6 +155,23 @@ the same call went through fine, so it is the payload size, not the operation.
   broken code silently and only fails at runtime — and debugging it in the editor in front of
   an audience is the worst place to find out.
 
+## AI connections need `sourceOutput`, not `sourcePort`
+
+When wiring a model, tool or memory node to an Agent or Chain via
+`n8n_update_partial_workflow`, the connection type goes in **`sourceOutput`**:
+
+```json
+{"type": "addConnection", "source": "Claude", "target": "Extract data",
+ "sourceOutput": "ai_languageModel"}
+```
+
+Passing `sourcePort: "ai_languageModel"` is accepted without complaint and stored
+as a plain `main` connection. The workflow looks right in the editor and fails at
+runtime with `A Model sub-node must be connected and enabled`.
+
+Valid values: `ai_languageModel`, `ai_tool`, `ai_memory`, `ai_embedding`,
+`ai_vectorStore`, `ai_outputParser`, `ai_document`, `ai_textSplitter`.
+
 ## Common Mistakes
 
 ### Mistake 1: Wrong nodeType Format
