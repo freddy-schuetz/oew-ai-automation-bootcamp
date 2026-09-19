@@ -110,11 +110,47 @@ Apps werden über **buildbar** veröffentlicht, nicht über einen anderen Hostin
 - Der **erste Build dauert einige Minuten**; eine Fehlermeldung wie „no available server" in dieser Zeit ist normal.
 - Secrets nur über den `env`-Parameter bzw. `.env.local` (lokal, nicht committet), **nie** ins Repo. Der Supabase-`service_role`-Key gehört nie in ein Frontend.
 
+## Drei Stolpersteine beim ersten Veröffentlichen
+
+Alle am 19./20.09.2026 am echten Dienst gemessen.
+
+**1. Der Branch muss `main` heissen.** Der Deploy-Dienst klont `main`. Ein frisch
+mit `git init` angelegtes Repo hat aber `master`, und dann scheitert der Build mit
+`fatal: Remote branch main not found in upstream origin`.
+
+⚠️ **Der Dienst meldet trotzdem HTTP 200 und gibt eine URL zurück.** Man bekommt
+also eine Adresse, hinter der nichts steht, und sucht den Fehler an der falschen
+Stelle. Vor dem ersten Deploy:
+
+```bash
+git branch -M main && git push -u origin main
+```
+
+**2. `NEXT_PUBLIC_*` wird zur BAUZEIT eingesetzt.** Die Werte müssen beim Deploy
+mitgegeben werden. Sie später nachzutragen wirkt nicht, es braucht einen neuen
+Build. Symptom: Die Seite lädt, aber jeder Webhook-Aufruf scheitert, weil die
+Basis-URL leer ist.
+
+**3. Der erste Build dauert rund drei Minuten.** Vorher kommt kein 404, sondern
+gar keine Verbindung. Nicht zu früh aufgeben und neu deployen.
+
 ## Vor dem Veröffentlichen verifizieren (Pflicht)
 
 1. **`npm run build`**: Build muss grün sein (fängt SSR- und Type-Fehler vor dem Veröffentlichen ab).
 2. Nur **Desktop:** `npm run dev` für eine lokale Vorschau. Im **Web** gibt es kein `localhost`; die Vorschau ist die veröffentlichte Adresse.
 3. Erst dann committen, pushen (Web: Pull Request mergen) und veröffentlichen.
+
+## Webhook-Aufruf aus dem Browser: geht, aber mit Nebenwirkung
+
+n8n sendet bei Webhooks CORS-Header und **spiegelt den Origin** (gemessen:
+`OPTIONS` gibt 204, `Access-Control-Allow-Origin` trägt den anfragenden Origin).
+Der direkte `fetch` aus dem Frontend funktioniert also, ohne Proxy.
+
+⚠️ **Es wird JEDER Origin gespiegelt.** Ein Webhook ohne Authentifizierung ist
+damit von jeder beliebigen Website aufrufbar. Für Testdaten im Bootcamp
+vertretbar. Sobald echte Daten daran hängen: Header-Auth am Webhook einschalten,
+oder den Aufruf serverseitig in einen Route Handler legen, damit der Schlüssel
+nicht im Browser steht.
 
 ## Env-Var-Checkliste
 
