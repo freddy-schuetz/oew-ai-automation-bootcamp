@@ -75,6 +75,30 @@ Für „Claude, speicher das in einer Tabelle, die ich im Browser sehe und bearb
 
 Wenn eine **veröffentlichte App** und/oder **mehrere Dienste** eine gemeinsame Postgres-Datenbank brauchen, oder du **Login**, **Datei-Uploads** oder **Vektorsuche (pgvector, Suche nach Sinn statt Stichwort)** willst.
 
+> ⚠️ **Vektorsuche: technisch da, aber im Bootcamp nicht bedienbar.**
+> Die ÖW-Supabase hat seit dem 20.09.2026 **pgvector 0.8.0**, eine Tabelle `documents`
+> (Spalte `embedding` vom Typ `vector(1536)`) und die Funktion
+> `match_documents(query_embedding, match_count, filter)`.
+> **Aber:** Um Text in Vektoren zu verwandeln, braucht man einen Embedding-Dienst — und der
+> einzige KI-Zugang im Bootcamp ist **Anthropic**, und Anthropic bietet keine Embeddings an.
+> Es gibt auf der Instanz kein Credential für OpenAI, Cohere, Mistral oder Google.
+> **RAG ist deshalb kein Bootcamp-Use-Case**, solange kein vierter Zugang dazukommt.
+>
+> **Was stattdessen funktioniert und für deutschsprachige Texte oft besser ist:**
+> Postgres kann **deutsche Volltextsuche**, ohne jeden fremden Dienst. Am 20.09. auf der
+> ÖW-Supabase geprüft:
+> ```sql
+> -- Spalte anlegen und füllen
+> ALTER TABLE deine_tabelle ADD COLUMN suche tsvector
+>   GENERATED ALWAYS AS (to_tsvector('german', coalesce(titel,'') || ' ' || coalesce(text,''))) STORED;
+> CREATE INDEX ON deine_tabelle USING gin(suche);
+> -- Suchen, mit Stammformen: „Hütten“ findet „Hütte“
+> SELECT titel FROM deine_tabelle WHERE suche @@ websearch_to_tsquery('german', 'Almhütte Winter');
+> ```
+> Das versteht Beugung und Komposita, braucht keinen Schlüssel, kostet nichts und ist in
+> fünf Minuten eingerichtet.
+
+
 - **Zugangsdaten** (Project-URL, `anon`-Key, `service_role`-Key) stehen im **Zugangsbereich https://buildbar.at/oew#zugang**. Keine eigene Anmeldung nötig.
 - **n8n:** Node **„Supabase“** mit Project-URL und `service_role`-Key als Credential.
 - **Next.js:** `@supabase/supabase-js` mit Project-URL und **nur dem `anon`-Key** (als `env` beim Veröffentlichen, nie im Repository).

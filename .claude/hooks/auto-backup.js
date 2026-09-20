@@ -21,7 +21,7 @@ process.stdin.on("end", () => {
     const data = JSON.parse(input);
     const toolName = data.tool_name || "";
     const toolInput = data.tool_input || {};
-    const toolResult = data.tool_result || {};
+    const toolResult = data.tool_response || data.tool_result || {};
     const cwd = data.cwd || process.cwd();
 
     if (!BACKUP_TOOLS.includes(toolName)) {

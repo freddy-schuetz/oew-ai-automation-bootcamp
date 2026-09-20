@@ -43,6 +43,18 @@ Ablauf: **Tag 1** Planung im Sparring mit der KI (Skills `idee-klaeren` und `gri
 ## KI-Zugang (Anthropic)
 - Für KI-Bausteine in n8n (z. B. Anthropic Chat Model am AI Agent) gibt es im Zugangsbereich einen **Anthropic-API-Key mit Ausgabelimit**. In n8n gehört er in ein Credential mit dem Namen **„Anthropic“**.
 - Prüfe zuerst, ob das Credential „Anthropic“ in der n8n schon existiert, und verwende es. Fehlt es, trägt die Person den Key im n8n-Editor selbst als Credential ein (Typ Anthropic, Name „Anthropic“).
+
+## Google-Daten (DataForSEO)
+
+- Auf der zentralen Bootcamp-n8n liegt ein Credential **„DataForSEO“** (Typ *Basic Auth*). Damit lassen sich **Google-Einträge** abfragen: Öffnungszeiten, Adresse, Telefon, Bewertungen, Kategorien.
+- Verwendung: **HTTP Request**-Node auf `https://api.dataforseo.com/v3/business_data/google/my_business_info/live`, Methode POST, Authentifizierung *Predefined Credential Type* → *Basic Auth* → „DataForSEO“.
+- ⚠⚠ **Jede Abfrage kostet echtes Geld**, rund **0,005 USD je Betrieb**. Das ist der einzige Baustein im Bootcamp, bei dem das so ist. Deshalb:
+  - **Zuerst mit genau einem Betrieb testen**, nicht mit einer Liste.
+  - Vor einem Lauf über viele Betriebe kurz überschlagen: 100 Betriebe täglich sind rund 19 USD im Monat, stündlich sind es rund 400.
+  - Keine Schleife über eine ganze Tabelle bauen, ohne die Zeilenzahl vorher zu begrenzen.
+- **Land setzen.** Ohne `location_name` sucht der Dienst in Deutschland. Für Österreich `"location_name": "Austria"` mitgeben, besser zusätzlich `latitude`/`longitude`. Sonst trifft er bei gleichnamigen Hütten den falschen Betrieb — und meldet keinen Fehler.
+- Der Dienst **liest nur**. Ein Google-Eintrag lässt sich darüber nicht ändern; dafür bräuchte es die Google-Business-Profile-API und eine Rolle im jeweiligen Eintrag.
+
 - Der Key gehört **nie** in Workflow-Parameter, Code-Nodes, Frontend (auch nicht lokal in `.env.local`), Deploy-`env` oder das Repository.
 - Das Budget des Schlüssels ist begrenzt: mit wenigen, kleinen Beispielen testen statt mit großen Datenmengen.
 
