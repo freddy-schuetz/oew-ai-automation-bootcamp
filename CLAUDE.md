@@ -44,6 +44,15 @@ Ablauf: **Tag 1** Planung im Sparring mit der KI (Skills `idee-klaeren` und `gri
 - Für KI-Bausteine in n8n (z. B. Anthropic Chat Model am AI Agent) gibt es im Zugangsbereich einen **Anthropic-API-Key mit Ausgabelimit**. In n8n gehört er in ein Credential mit dem Namen **„Anthropic“**.
 - Prüfe zuerst, ob das Credential „Anthropic“ in der n8n schon existiert, und verwende es. Fehlt es, trägt die Person den Key im n8n-Editor selbst als Credential ein (Typ Anthropic, Name „Anthropic“).
 
+## OpenAI (Embeddings, Sprache zu Text, Text zu Sprache)
+
+- Auf der zentralen Bootcamp-n8n liegt ein Credential **„OpenAI“**. Es deckt drei Dinge ab, die Anthropic nicht kann:
+  - **Embeddings** für die Vektorsuche (`text-embedding-3-small`, 1536 Zahlen — passt genau zur Tabelle `documents` in der ÖW-Supabase). Rezept in `docs/datenbank.md`, fertiges Beispiel in `examples/workflows/wissensbasis-supabase.json`.
+  - **Sprache zu Text** (`whisper-1`, `gpt-4o-transcribe`): aus einer Audiodatei ein Transkript machen, etwa für Meeting-Notizen.
+  - **Text zu Sprache** (`tts-1`): aus Text eine Audiodatei.
+- **Für das Schreiben von Texten bleibt Anthropic der Normalfall.** OpenAI ist für die drei Sachen oben da, nicht als zweites Chat-Modell.
+- ⚠️ **Audiodateien sind personenbezogen.** Wer eine Besprechung aufnimmt, braucht die Zustimmung aller Beteiligten, und das Transkript gehört danach an einen Ort mit Loeschfrist. Die Aufnahme selbst sollte den Ablauf nicht überleben: transkribieren, Datei löschen, nur den Text behalten.
+
 ## Google-Daten (DataForSEO)
 
 - Auf der zentralen Bootcamp-n8n liegt ein Credential **„DataForSEO“** (Typ *Basic Auth*). Damit lassen sich **Google-Einträge** abfragen: Öffnungszeiten, Adresse, Telefon, Bewertungen, Kategorien.
