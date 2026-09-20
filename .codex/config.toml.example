@@ -3,6 +3,10 @@
 # (Projekt-Scope funktioniert nur bei "trusted projects").
 # N8N_API_URL: zentrale Bootcamp-n8n (Zugangsdaten im Zugangsbereich https://buildbar.at/oew#zugang)
 # oder deine eigene n8n mit API-Zugang. Die n8n-Cloud-Testversion hat keinen API-Zugang.
+# N8N_MCP_ACCESS_TOKEN: zweiter Schlüssel. Ohne ihn lassen sich Workflows OHNE Webhook
+# (also alle mit Zeitplan) nicht testen und Data-Table-Spalten nicht nachträglich ändern.
+# Zentrale Bootcamp-n8n: Token im Zugangsbereich. Eigene n8n: Settings, Instance-level MCP,
+# Status auf Enabled, dann den Key kopieren.
 # ⚠️ Die echte Datei NICHT committen (enthält deinen API-Key), sie steht in .gitignore.
 
 [mcp_servers.n8n-mcp]
@@ -12,6 +16,7 @@ args = ["-y", "n8n-mcp"]
 [mcp_servers.n8n-mcp.env]
 N8N_API_URL = "https://n8n-oew.buildbar.at"
 N8N_API_KEY = "DEIN_N8N_API_KEY"
+N8N_MCP_ACCESS_TOKEN = "DEIN_MCP_ACCESS_TOKEN"
 MCP_MODE = "stdio"
 LOG_LEVEL = "error"
 DISABLE_CONSOLE_OUTPUT = "true"

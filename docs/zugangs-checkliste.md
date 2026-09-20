@@ -53,6 +53,8 @@ Du wählst einen von zwei Wegen. Beide führen zum selben Ergebnis.
   - **Eigene n8n mit API-Zugang**, selbst gehostet oder als bezahlter Cloud-Plan. Du kannst dort einen API-Key erzeugen.
 - [ ] Du weißt: Die **kostenlose Testversion von n8n Cloud reicht nicht**. Sie hat keine öffentliche API, und die braucht Claude, um mit n8n zu arbeiten.
 - [ ] **KI-Zugang:** Du findest den Anthropic-API-Key im Zugangsbereich. Er hat ein Ausgabelimit. In n8n trägst du ihn als Zugangsdaten „Anthropic“ ein, nie in eine Datei im Repository. Auf der zentralen Bootcamp-n8n gibt es die Zugangsdaten „Anthropic“ vielleicht schon. Dann nimmst du diese und legst keine zweiten an.
+- [ ] **Zweiter Schlüssel, der MCP-Token:** Neben dem API-Key trägst du in deiner `.mcp.json` den `N8N_MCP_ACCESS_TOKEN` ein, als dritte Variable neben Adresse und API-Key. Ohne ihn kann Claude Workflows **ohne Webhook** nicht starten, also alle mit Zeitplan. Für die zentrale Bootcamp-n8n steht der Token im Zugangsbereich. Bei einer eigenen n8n: Settings, Instance-level MCP, Status auf Enabled, dann den Key kopieren.
+- [ ] **Mailversand läuft über Brevo:** Mails verschickt dein Workflow mit dem Knoten „Brevo“, nicht mit „Send Email“. SMTP kommt vom Server nicht hinaus, die Ports sind gesperrt. Auf der zentralen Bootcamp-n8n sind die Zugangsdaten „Brevo“ schon hinterlegt. Der Absender muss in Brevo verifiziert sein; die verifizierte Adresse steht im Zugangsbereich.
 
 ## 5. Microsoft 365 oder Google
 
