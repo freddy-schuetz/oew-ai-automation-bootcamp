@@ -18,6 +18,7 @@ Ablauf: **Tag 1** Planung im Sparring mit der KI (Skills `idee-klaeren` und `gri
 - **Zielgruppe:** Touristiker:innen mit wenig oder keiner Code-Erfahrung. Erkläre in **einfacher Sprache**, ohne unerklärten Fachjargon, in der du-Form.
 - **Ein Vorhaben pro Person, passend für vier Tage.** Lieber ein Ablauf, der wirklich läuft, als drei halbfertige.
 - **Erst die Idee klären:** Ist die Person unsicher, beschreibt sie ihr Vorhaben vage oder geht es direkt nach der Einrichtung los, nutze **zuerst** den Skill `idee-klaeren` (freundliches Interview, Ergebnis: Prozess-Steckbrief). Biete das aktiv an. Hat jemand einen **fertigen Plan** und will ihn prüfen lassen („grill mich“), nimm den Skill `grill-me`, aber **nur auf ausdrücklichen Wunsch**.
+- **Bausteine der Bootcamp-n8n mitdenken:** Beim Planen prüfen, ob einer der fertigen Zugänge passt, vor allem bei Daten von außen (Google-Einträge, fremde Websites, Sprache). Übersicht: [Was die Bootcamp-n8n mitbringt](#was-die-bootcamp-n8n-mitbringt-beim-planen-mitdenken).
 - **Themen-Skills nutzen:** Passt das Vorhaben zu einem Bootcamp-Thema, lies vor dem Planen den passenden Skill (siehe [Themen-Skills](#themen-skills)).
 - **Freigaben früh prüfen:** Braucht das Vorhaben Postfach, Kalender, Teams oder ein Google-Konto, kläre das am Tag 1 **vor dem Bauen** (siehe [Freigaben früh prüfen](#freigaben-früh-prüfen-microsoft-365-und-google)).
 - **Sei proaktiv:** Führe den Standard-Prozess **selbstständig** durch. Frag nicht für jeden Schritt um Erlaubnis.
@@ -44,6 +45,23 @@ Ablauf: **Tag 1** Planung im Sparring mit der KI (Skills `idee-klaeren` und `gri
 - Für KI-Bausteine in n8n (z. B. Anthropic Chat Model am AI Agent) gibt es im Zugangsbereich einen **Anthropic-API-Key mit Ausgabelimit**. In n8n gehört er in ein Credential mit dem Namen **„Anthropic“**.
 - Prüfe zuerst, ob das Credential „Anthropic“ in der n8n schon existiert, und verwende es. Fehlt es, trägt die Person den Key im n8n-Editor selbst als Credential ein (Typ Anthropic, Name „Anthropic“).
 
+## Was die Bootcamp-n8n mitbringt (beim Planen mitdenken)
+
+Auf der zentralen Bootcamp-n8n liegen fertige Zugänge. **Denk sie beim Planen mit, auch im Plan-Modus, und schlag sie aktiv vor, wenn das Vorhaben sie braucht.** Dräng sie niemandem auf. Viele gute Ideen bleiben sonst ungebaut, weil die Person nicht weiß, dass es das gibt.
+
+| Wenn das Vorhaben … | gibt es dafür | Achtung |
+|---|---|---|
+| Texte verstehen, sortieren, zusammenfassen oder Entwürfe schreiben soll | **Anthropic** (KI-Nodes) | Normalfall für alles mit KI |
+| Angaben zu **bekannten Betrieben aus Google** braucht (Öffnungszeiten, Adresse, Telefon, Bewertungen) | **DataForSEO** | kostet je Abfrage Geld |
+| Daten von **Websites ohne Schnittstelle** braucht (TripAdvisor, Booking.com, beliebige Seiten als Text) oder **Betriebe nach Kategorie und Ort sucht** (Google Maps) | **Apify** | kostet je Lauf Geld, kleines gemeinsames Budget |
+| aus **Sprache Text** machen soll oder umgekehrt | **OpenAI** | Aufnahmen sind personenbezogen |
+| in **eigenen Dokumenten suchen** soll (Wissensbasis) | **OpenAI** + **Supabase** | fertiges Beispiel im Repo |
+| **Mails verschicken** soll | **Brevo** | Absender aus dem Zugangsbereich |
+| **offene Daten** abruft (Wetter, Feiertage, Statistik) | nichts nötig, HTTP-Request-Node | |
+| eine Tabelle braucht | **Data Tables** in n8n; **NocoDB**, wenn Menschen die Tabelle im Browser pflegen sollen | |
+
+Die Anleitungen stehen in eigenen Abschnitten dieser Datei: Anthropic direkt darüber, die übrigen weiter unten.
+
 ## OpenAI (Embeddings, Sprache zu Text, Text zu Sprache)
 
 - Auf der zentralen Bootcamp-n8n liegt ein Credential **„OpenAI“**. Es deckt drei Dinge ab, die Anthropic nicht kann:
@@ -56,8 +74,8 @@ Ablauf: **Tag 1** Planung im Sparring mit der KI (Skills `idee-klaeren` und `gri
 ## Google-Daten (DataForSEO)
 
 - Auf der zentralen Bootcamp-n8n liegt ein Credential **„DataForSEO“** (Typ *Basic Auth*). Damit lassen sich **Google-Einträge** abfragen: Öffnungszeiten, Adresse, Telefon, Bewertungen, Kategorien.
-- Verwendung: **HTTP Request**-Node auf `https://api.dataforseo.com/v3/business_data/google/my_business_info/live`, Methode POST, Authentifizierung *Predefined Credential Type* → *Basic Auth* → „DataForSEO“.
-- ⚠⚠ **Jede Abfrage kostet echtes Geld**, rund **0,005 USD je Betrieb**. Das ist der einzige Baustein im Bootcamp, bei dem das so ist. Deshalb:
+- Verwendung: **HTTP Request**-Node auf `https://api.dataforseo.com/v3/business_data/google/my_business_info/live`, Methode POST, Authentifizierung *Generic Credential Type* → *Basic Auth* → „DataForSEO“.
+- ⚠⚠ **Jede Abfrage kostet echtes Geld**, rund **0,005 USD je Betrieb**. Zusammen mit **Apify** (siehe unten) ist das einer von zwei Datendiensten im Bootcamp, die jede Abfrage einzeln abrechnen. Deshalb:
   - **Zuerst mit genau einem Betrieb testen**, nicht mit einer Liste.
   - Vor einem Lauf über viele Betriebe kurz überschlagen: 100 Betriebe täglich sind rund 19 USD im Monat, stündlich sind es rund 400.
   - Keine Schleife über eine ganze Tabelle bauen, ohne die Zeilenzahl vorher zu begrenzen.
@@ -66,6 +84,44 @@ Ablauf: **Tag 1** Planung im Sparring mit der KI (Skills `idee-klaeren` und `gri
 
 - Der Key gehört **nie** in Workflow-Parameter, Code-Nodes, Frontend (auch nicht lokal in `.env.local`), Deploy-`env` oder das Repository.
 - Das Budget des Schlüssels ist begrenzt: mit wenigen, kleinen Beispielen testen statt mit großen Datenmengen.
+
+## Websites ohne Schnittstelle (Apify)
+
+- Auf der zentralen Bootcamp-n8n liegt ein Credential **„Apify“** (Typ *Header Auth*). Apify betreibt fertige Scraper, dort **Actors** genannt, für Seiten ohne Datenschnittstelle: Google-Maps-Suchen, TripAdvisor, Booking.com oder beliebige Websites als Text.
+- **Einen fertigen Apify-Node gibt es auf der Bootcamp-n8n nicht.** Verwendung: **HTTP Request**-Node, Methode POST, Authentifizierung *Generic Credential Type* → *Header Auth* → „Apify“. Adresse:
+  `https://api.apify.com/v2/actors/<ACTOR>/run-sync-get-dataset-items?maxTotalChargeUsd=0.5&timeout=180`
+  Die Eingabe des Actors geht als JSON in den Body (*Send Body* → *Specify Body: Using JSON*). Die Ergebnisse kommen direkt als Liste zurück.
+- Auf einer **eigenen n8n** gibt es das Credential nicht. Dort legst du Zugangsdaten vom Typ *Header Auth* an: Name `Authorization`, Wert `Bearer ` (mit Leerzeichen) und dahinter der Schlüssel aus dem Zugangsbereich.
+- Actors, die im Tourismus meist passen. In der Adresse steht der Name mit Tilde. Die ersten zwei sind am 21.09. mit genau dieser Anleitung getestet, die anderen zwei laut Apify Store:
+
+  | Zweck | Actor | Menge begrenzen mit |
+  |---|---|---|
+  | Orte aus Google Maps (Adresse, Öffnungszeiten, Bewertung) | `compass~crawler-google-places` | `maxCrawledPlacesPerSearch` (leer heißt: alle Orte) |
+  | Beliebige Website als Text | `apify~website-content-crawler` | `maxCrawlPages` und `maxCrawlDepth`; dazu Pflichtfeld `proxyConfiguration` |
+  | TripAdvisor (Hotels, Restaurants, Attraktionen) | `maxcopell~tripadvisor` | `maxItemsPerQuery` |
+  | Booking.com (Unterkünfte, Preise) | `voyager~booking-scraper` | `maxItems` im Body; Preise nur mit `checkIn`, `checkOut`, `adults` und `rooms` |
+
+  **Google Maps über Apify oder DataForSEO?** Einzelne, bekannte Betriebe nachschlagen: DataForSEO. Apify nur, um nach Kategorie und Ort zu suchen, also Betriebe zu finden, die man noch nicht kennt. Das Beispiel unten zeigt nur, wie der Aufruf aussieht.
+
+  Beispiel-Body für Google Maps:
+  ```json
+  { "searchStringsArray": ["Tourismusverband Altenmarkt-Zauchensee"],
+    "locationQuery": "Altenmarkt im Pongau, Austria",
+    "maxCrawledPlacesPerSearch": 1, "language": "de" }
+  ```
+  Beispiel-Body für eine Website: `{ "startUrls": [{ "url": "https://…" }], "maxCrawlPages": 1, "maxCrawlDepth": 0, "proxyConfiguration": { "useApifyProxy": true } }`
+- Für andere Seiten im Apify Store nach dem Namen suchen. Immer die **volle Kennung mit Benutzername** nehmen, unter ähnlichen Namen gibt es Nachbauten. Vor dem ersten Lauf im Input-Schema nachsehen, **wie das Mengenfeld heißt**, und prüfen, dass der Actor **keine monatliche Miete** (*rental*) verlangt.
+- ⚠⚠ **Jeder Lauf kostet echtes Geld**, und alle Teilnehmenden teilen sich **ein kleines Monatsbudget**. Ist es aufgebraucht, antwortet Apify für alle mit Fehler **402**. Ein Testlauf mit einem Ergebnis kostet um einen Cent, teuer wird es über die Menge. Deshalb:
+  - **Die Menge im Body begrenzen**, mit dem Feld aus der Tabelle. Ohne Grenze holt der Google-Maps-Actor alle Orte und der Website-Crawler bis zu 9.999.999 Seiten.
+  - **`maxItems` in der Adresse bremst nicht.** Es deckelt nur die Abrechnung bei einem Teil der Actors, bei den vier oben nicht. Im Body ist `maxItems` nur beim Booking-Actor das Mengenfeld.
+  - **`maxTotalChargeUsd` in der Adresse** deckelt die Kosten eines Laufs. Manche Actors verlangen einen Mindestwert, der Google-Maps-Actor **0.5**; darunter kommt Fehler 400. Mit 0.5 anfangen.
+  - **Zuerst mit 1 bis 3 Ergebnissen testen**, nicht mit einer Liste.
+  - Keine Schleife und keinen Zeitplan bauen, ohne vorher Anzahl und Kosten zu überschlagen.
+- **Zeit:** Der Aufruf wartet höchstens 5 Minuten. Danach kommt Fehler **408**, und der Lauf arbeitet im Hintergrund weiter. `timeout=180` in der Adresse beendet ihn vorher.
+- Die Option *Timeout* im HTTP-Node **weglassen oder auf mindestens 200000 ms stellen** (länger als `timeout=180`). Ohne sie wartet der Node 5 Minuten. Fügt man sie hinzu, steht sie zunächst auf **10000 ms**: Dann bricht n8n nach 10 Sekunden ab, der Lauf bei Apify arbeitet aber weiter und kostet. In dem Fall nicht einfach neu starten.
+- ⚠️ **Erfolg heißt nicht, dass die Seite stimmt.** Apify meldet auch dann Erfolg, wenn die abgerufene Seite nur „Seite nicht gefunden“ enthält. Den Text des ersten Ergebnisses ansehen, bevor weitergebaut wird.
+- **Personenbezogene Daten:** Bewertungen enthalten Namen von Gästen. Nur auswerten, was gebraucht wird, und keine Namen dauerhaft speichern.
+- Der Schlüssel gehört **nie** in Workflow-Parameter, Code-Nodes, Frontend oder Repository. Immer das Credential „Apify“ nehmen.
 
 ## Freigaben früh prüfen (Microsoft 365 und Google)
 Viele Vorhaben scheitern nicht an n8n, sondern an fehlenden Freigaben. Kläre das deshalb **am Tag 1 im Steckbrief, bevor gebaut wird**, mit dem Skill `m365-google-freigaben`. Fehlt der Skill, nutze die Fakten in diesem Abschnitt.
