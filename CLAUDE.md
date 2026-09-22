@@ -318,6 +318,17 @@ Lokal zeigst du die App auf `http://localhost:3000`. Will die Person eine **öff
    curl -s -X POST https://deploy-oew.buildbar.at/publish -d deployId=<deployId> -d base_dir=/frontend-starter --data-urlencode password=<BOOTCAMP-PASSWORT> --data-urlencode env=$'NEXT_PUBLIC_N8N_BASE=https://n8n-oew.buildbar.at\nNEXT_PUBLIC_SUPABASE_URL=...'
    ```
    Antwort: die URL, z. B. `https://app-xxxx.buildbar.at`. **Der erste Build dauert einige Minuten.**
+5. **Spätere Änderungen veröffentlichen — dieselbe Adresse:** committen, pushen, dann
+   ```bash
+   curl -s -X POST https://deploy-oew.buildbar.at/update -d repo=<owner>/<name> --data-urlencode password=<BOOTCAMP-PASSWORT>
+   ```
+   ⚠️ **Nie ein zweites Mal `/prepare` + `/publish` für dasselbe Repository.** Das legt eine **zweite App unter neuer Adresse** an, während die alte mit dem alten Stand weiterläuft — und genau dann wirkt es so, als ginge das Veröffentlichen nicht mehr. `/prepare` antwortet bei einem bekannten Repository deshalb mit `existing: true` und der bestehenden Adresse.
+6. **Antwortet die Adresse nach ein paar Minuten weiter mit 503 oder „no available server“:** nicht raten, nachsehen.
+   ```bash
+   curl -s -X POST https://deploy-oew.buildbar.at/status -d repo=<owner>/<name> --data-urlencode password=<BOOTCAMP-PASSWORT>
+   ```
+   Antwort: `status` (`finished` oder `failed`), `commit` und bei einem Fehlschlag `fehlerzeilen` aus dem Build-Protokoll auf dem Server. Ein `failed` liegt fast immer am eigenen Stand (fehlende Abhängigkeit, Typfehler, fehlende Env-Variable) — sag der Person, was dort steht, statt ein Serverproblem zu vermuten.
+7. **Einmalig einrichten, danach genügt `git push`:** Die Antwort von `/publish` und `/update` enthält unter `webhook.einmal_ausfuehren` eine fertige `gh`-Zeile. Führ sie einmal aus (die Person bestätigt per Klick). Danach stösst jeder Push auf `main` die Veröffentlichung selbst an, Schritt 5 entfällt.
 
 - `base_dir` ist der Frontend-Ordner im Repository (Standard `/frontend-starter`). `env` enthält eine Zeile `KEY=VALUE` je Variable.
 - ⚠️ **`NEXT_PUBLIC_*`-Werte landen im Browser-Code** und sind damit öffentlich: nur n8n-URL, Supabase-URL und Supabase-`anon`-Key. **Nie** in `env` oder ins Repository: `service_role`-Key, KI-Schlüssel, n8n-API-Key, Bootcamp-Passwort.
